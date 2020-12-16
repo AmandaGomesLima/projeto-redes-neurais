@@ -15,6 +15,8 @@ matrizTreino: .word 2, 2, 4			# Matriz com elementos para treino
 		      .word 4, 4, 8
 		      .word 5, 5, 10
 		      .word 6, 6, 12
+txtPeso1: .asciiz "peso1: "
+txtPeso2: .asciiz "peso2: "              
 txtSoma: .asciiz " + "
 txtIgual: .asciiz " = "
 txtQuebraLinha: .asciiz "\n"
@@ -38,7 +40,7 @@ rodadaLoop:
 	add $t1, $t1, 1 				# k = k + 1
 	blt $t1, $t0, rodadaLoop   		# k < QTD_RODADA
 endRodadaLoop:
-	jal imprimeLoop
+	jal imprime
 	# Finalizar o programa
 	li $v0, 10 						# Determinar codigo da funcao terminar
 	syscall 						# Chamar sistema para executar funcao
@@ -114,7 +116,29 @@ endTreinoLoop:
 .ent imprime
 imprime:
 	li $t3, 0 						# i = 0
-	lw $t4, QTD_TESTE				# QTD_TESTE
+	li $t4, QTD_TESTE				# QTD_TESTE
+
+    li $v0, 4
+	la $a0, txtPeso1
+	syscall                         # imprime "peso1 "
+    li $v0, 2
+	mov.s $f12, $f0
+	syscall                         # imprime valor do peso1
+    li $v0, 4
+	la $a0, txtQuebraLinha
+	syscall                         # faz quebra de linha no console
+    li $v0, 4
+	la $a0, txtPeso2
+	syscall                         # imprime "peso2 "
+    li $v0, 2
+	mov.s $f12, $f1
+	syscall                         # imprime valor do peso2
+    li $v0, 4
+	la $a0, txtQuebraLinha
+	syscall                         # faz quebra de linha no console
+    li $v0, 4
+	la $a0, txtQuebraLinha
+	syscall                         # faz quebra de linha no console
 
 imprimeLoop:
 	addi $t5, $t3, 1				# num = i + 1
@@ -126,28 +150,27 @@ imprimeLoop:
 	mul.s $f5, $f3, $f1				# termo2 = num * peso[1]
 	# soma dos termos
 	add.s $f6, $f5, $f4				# soma = termo1 + termo2
-	# imprime soma
-	li $v0, 2
-	mov.s $f12, $f3
-	syscall
+	li $v0, 1                       
+	move $a0, $t5
+	syscall                         # imprime valor do num (inteiro)
 	li $v0, 4
 	la $a0, txtSoma
-	syscall
-	li $v0, 2
-	mov.s $f12, $f3
-	syscall
+	syscall                         # imprime "+"
+	li $v0, 1
+	move $a0, $t5
+	syscall                         # imprime valor do num (inteiro)
 	li $v0, 4
 	la $a0, txtIgual
-	syscall
+	syscall                         # imprime "="
 	li $v0, 2
 	mov.s $f12, $f6
-	syscall
+	syscall                         # imprime valor da soma (float)
 	li $v0, 4
 	la $a0, txtQuebraLinha
-	syscall
+	syscall                         # faz quebra de linha no console
 	# --
 	add $t3, $t3, 1 				# i = i + 1
-	blt $t3, $t4, treinoLoop  		# i < QTD_TESTE, vai para imprimeLoop
+	blt $t3, $t4, imprimeLoop  		# i < QTD_TESTE, vai para imprimeLoop
 	# retorna para a funcao que o chamou
 	jr $ra
 .end treino
